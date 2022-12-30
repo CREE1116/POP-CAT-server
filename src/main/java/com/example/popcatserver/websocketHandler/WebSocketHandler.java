@@ -39,7 +39,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String id = session.getId();  //메시지를 보낸 아이디
         JSONObject forSend = new JSONObject();
-        if(message.getPayload().equals("top")) {
+        if(!message.getPayload().equals("top")) {
             int count = Integer.parseInt(message.getPayload());
             sendMessage( popCatService.addData(count, id),id);
         }else{

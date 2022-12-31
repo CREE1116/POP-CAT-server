@@ -42,21 +42,24 @@ public class PopCatServiceImpl implements PopCatService{
         }
         return null;
     }
-    private boolean isSameIterable(Iterable<UserEntity> prev, Iterable<UserEntity> current){
+    public boolean isSameIterable(Iterable<UserEntity> prev, Iterable<UserEntity> current){
         if(prev == null && current== null) return true;
         if(prev == null || current == null) return false;
-        System.out.println("prev-> ");
-        printIterable(prev);
-        System.out.println("current-> ");
-        printIterable(current);
         List<UserEntity> prevList = new ArrayList<UserEntity>();
         List<UserEntity> currentList = new ArrayList<UserEntity>();
         prev.forEach(prevList::add);
         current.forEach(currentList::add);
 
-        for(int i = 0; i<prevList.size();i++){
-            if(!prevList.get(i).getSessionId().equals(currentList.get(i).getSessionId()))return false;
-            if(!prevList.get(i).getCount().equals(currentList.get(i).getCount()))return false;
+        for(int i = 0; i<currentList.size();i++){
+            if(!prevList.get(i).getSessionId().equals(currentList.get(i).getSessionId())){
+                System.out.println("user is change");
+                return false;
+            }
+            if(!prevList.get(i).getCount().equals(currentList.get(i).getCount())){
+                System.out.println("count is change");
+                return false;
+
+            }
         }
         return true;
     }
@@ -67,21 +70,12 @@ public class PopCatServiceImpl implements PopCatService{
         i++;
         }
     }
-    @Override
-    public JSONObject getTop10() {
-        Iterable<UserEntity> temp = userRepository.findTop10ByOrderByCountDesc();
-        if(isSameIterable(Top10 ,temp)) {
-            Top10 = temp;
-            return returnTop10();
-        }return null;
-    }
-
-    public JSONObject returnTop10(){
+    public JSONObject returnTop10( Iterable<UserEntity> current){
         JSONObject forSend = new JSONObject();
         List<JSONObject> list  = new ArrayList<>();
         forSend.put("type", "top10");
         int i = 1;
-        for (UserEntity userEntity : Top10) {
+        for (UserEntity userEntity : current) {
             JSONObject temp = new JSONObject();
             temp.put("ranking", String.valueOf(i));
             temp.put("id", userEntity.getSessionId());
@@ -91,6 +85,22 @@ public class PopCatServiceImpl implements PopCatService{
         }
         forSend.put("data",list);
         return forSend;
+    }
+    public JSONObject returnTop10(){
+        Iterable<UserEntity> current = userRepository.findTop10ByOrderByCountDesc();
+        return returnTop10(current);
+    }
+    public JSONObject getTop10(){
+        Iterable<UserEntity> current = userRepository.findTop10ByOrderByCountDesc();
+        System.out.println("in get10 -->");
+        printIterable(current);
+        if(current == null) return new JSONObject();
+        if(Top10 == null)Top10 = current;
+        if(!isSameIterable(Top10,current)){
+            Top10 = current;
+            return returnTop10(current);
+        }
+        return null;
     }
 
     @Override

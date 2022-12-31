@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.example.popcatserver.Thread.Top10Thread;
+
 import com.example.popcatserver.service.PopCatServiceImpl;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -24,10 +24,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Autowired
     public WebSocketHandler(PopCatServiceImpl popCatService){
         this.popCatService = popCatService;
-        Top10Thread top10Thread = new Top10Thread(this,popCatService);
-        if(!top10Thread.isAlive()) {
-            top10Thread.start();
-        }
 
     }
 
@@ -56,6 +52,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
         JSONObject forSend = popCatService.addData(Integer.parseInt(JsonMessage.get("count").toString()),JsonMessage.get("id").toString());
         if(forSend !=null){
         sendMessage(forSend.toString(),id);}
+        JSONObject top10 = popCatService.getTop10();
+        if (top10 != null) {
+            sendMessageAll(top10.toJSONString());
+        }
     }
 
     private void sendMessage(String forSend, String id){

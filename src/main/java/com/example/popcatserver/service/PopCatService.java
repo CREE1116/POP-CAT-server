@@ -5,7 +5,7 @@ import org.json.simple.JSONObject;
 
 public interface PopCatService {
     public JSONObject getMyRanking(String id);
-    public JSONObject getTop10();
+    public JSONObject returnTop10();
 
     public JSONObject addData(int count, String id);
 

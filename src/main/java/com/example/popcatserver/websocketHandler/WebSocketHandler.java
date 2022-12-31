@@ -35,9 +35,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         CLIENTS.put(session.getId(), session);
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id",session.getId());
+        jsonObject.put("data",session.getId());
         jsonObject.put("type","id");
         sendMessage(jsonObject.toJSONString(),session.getId());
+        sendMessage(popCatService.returnTop10().toJSONString(),session.getId());
 
 
     }
@@ -52,8 +53,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
         String id = session.getId();  //메시지를 보낸 아이디
         System.out.println(message.getPayload());
         JSONObject JsonMessage = jsonToObjectParser(message.getPayload());
-        String forSend = popCatService.addData(Integer.parseInt(JsonMessage.get("count").toString()),JsonMessage.get("id").toString()).toString();
-        sendMessage(forSend,id);
+        JSONObject forSend = popCatService.addData(Integer.parseInt(JsonMessage.get("count").toString()),JsonMessage.get("id").toString());
+        if(forSend !=null){
+        sendMessage(forSend.toString(),id);}
     }
 
     private void sendMessage(String forSend, String id){

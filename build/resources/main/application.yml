@@ -1,0 +1,19 @@
+
+
+
+Spring:
+  application:
+    name: popcat
+  jpa:
+    hibernate:
+      ddl-auto: update  # (1) ??? ?? ??
+    show-sql: false      # (2) SQL ?? ??
+    properties:
+      hibernate:
+        format_sql: true  # (3) SQL pretty print
+        dialect: org.hibernate.dialect.MariaDB103Dialect
+  datasource:
+    url: jdbc:mariadb://svc.gksl2.cloudtype.app:30970/popcatdb?useSSL=false
+    username: root
+    password: cf24lca6hu48
+    driver-class-name: org.mariadb.jdbc.Driver

@@ -35,7 +35,7 @@ public class PopCatServiceImpl implements PopCatService{
             if(userEntity.getCount() <= my.getCount()){
                 HashMap<String,String> member= new HashMap<>();
                 member.put("type","ranking");
-                member.put("ranking",String.valueOf(i+1));
+                member.put("data",String.valueOf(i+1));
                 return new JSONObject(member);
             }
             i++;
@@ -53,8 +53,10 @@ public class PopCatServiceImpl implements PopCatService{
         List<UserEntity> currentList = new ArrayList<UserEntity>();
         prev.forEach(prevList::add);
         current.forEach(currentList::add);
+
         for(int i = 0; i<prevList.size();i++){
             if(!prevList.get(i).getSessionId().equals(currentList.get(i).getSessionId()))return false;
+            if(!prevList.get(i).getCount().equals(currentList.get(i).getCount()))return false;
         }
         return true;
     }
@@ -70,19 +72,25 @@ public class PopCatServiceImpl implements PopCatService{
         Iterable<UserEntity> current= userRepository.findTop10ByOrderByCountDesc();
         if(!isSameIterable(Top10,current)) {
             Top10 = current;
-            JSONObject forSend = new JSONObject();
-            forSend.put("type", "top10");
-            int i = 1;
-            for (UserEntity userEntity : Top10) {
-                JSONObject temp = new JSONObject();
-                temp.put("ranking", String.valueOf(i));
-                temp.put("id", userEntity.getSessionId());
-                temp.put("count", userEntity.getCount());
-                forSend.put(String.valueOf(i), temp);
-                i++;
-            }
-            return forSend;
+            return returnTop10();
         }return null;
+    }
+
+    public JSONObject returnTop10(){
+        JSONObject forSend = new JSONObject();
+        List<JSONObject> list  = new ArrayList<>();
+        forSend.put("type", "top10");
+        int i = 1;
+        for (UserEntity userEntity : Top10) {
+            JSONObject temp = new JSONObject();
+            temp.put("ranking", String.valueOf(i));
+            temp.put("id", userEntity.getSessionId());
+            temp.put("count", userEntity.getCount());
+            list.add(temp);
+            i++;
+        }
+        forSend.put("data",list);
+        return forSend;
     }
 
     @Override

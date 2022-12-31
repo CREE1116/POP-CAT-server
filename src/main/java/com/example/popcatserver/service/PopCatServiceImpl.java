@@ -95,6 +95,7 @@ public class PopCatServiceImpl implements PopCatService{
 
     @Override
     public JSONObject addData(int count, String id) {
+        if(id==null || id.length()<1) return null;
         UserEntity userEntity = userRepository.findBySessionId(id);
         if(null ==userEntity){
             UserDto userDto = new UserDto();

@@ -28,7 +28,7 @@ public class Top10Thread extends Thread{
                 System.out.println("1");
             }
             try {
-                Thread.sleep(500);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 System.out.println("error");
                 e.printStackTrace();

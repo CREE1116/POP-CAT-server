@@ -69,8 +69,11 @@ public class PopCatServiceImpl implements PopCatService{
     }
     @Override
     public JSONObject getTop10() {
-        Top10= userRepository.findTop10ByOrderByCountDesc();
+        Iterable<UserEntity> temp = userRepository.findTop10ByOrderByCountDesc();
+        if(isSameIterable(Top10 ,temp)) {
+            Top10 = temp;
             return returnTop10();
+        }return null;
     }
 
     public JSONObject returnTop10(){

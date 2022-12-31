@@ -10,12 +10,16 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 @Service
 @Slf4j
 
 public class PopCatServiceImpl implements PopCatService{
     UserRepository userRepository;
+    Iterable<UserEntity> Top10;
     @Autowired
     public PopCatServiceImpl(UserRepository userRepository){
         this.userRepository = userRepository;
@@ -30,6 +34,7 @@ public class PopCatServiceImpl implements PopCatService{
         for(UserEntity userEntity:All ){
             if(userEntity.getCount() <= my.getCount()){
                 HashMap<String,String> member= new HashMap<>();
+                member.put("type","ranking");
                 member.put("ranking",String.valueOf(i+1));
                 return new JSONObject(member);
             }
@@ -37,19 +42,47 @@ public class PopCatServiceImpl implements PopCatService{
         }
         return null;
     }
-
-    @Override
-    public JSONArray getTop10() {
-        Iterable<UserEntity> Top10 = userRepository.findTop10ByOrderByCountDesc();
-        JSONArray jsonArray = new JSONArray();
-        HashMap<String,String> member= new HashMap<>();
-        for(UserEntity userEntity:Top10){
-            member.put("id",userEntity.getSessionId());
-            member.put("count",String.valueOf(userEntity.getCount()));
-            JSONObject temp = new JSONObject(member);
-            jsonArray.add(temp);
+    private boolean isSameIterable(Iterable<UserEntity> prev, Iterable<UserEntity> current){
+        if(prev == null && current== null) return true;
+        if(prev == null || current == null) return false;
+        System.out.println("prev-> ");
+        printIterable(prev);
+        System.out.println("current-> ");
+        printIterable(current);
+        List<UserEntity> prevList = new ArrayList<UserEntity>();
+        List<UserEntity> currentList = new ArrayList<UserEntity>();
+        prev.forEach(prevList::add);
+        current.forEach(currentList::add);
+        for(int i = 0; i<prevList.size();i++){
+            if(!prevList.get(i).getSessionId().equals(currentList.get(i).getSessionId()))return false;
         }
-        return jsonArray;
+        return true;
+    }
+    private void printIterable(Iterable<UserEntity> temp){
+        int i = 1;
+        for(UserEntity userEntity : temp){
+            System.out.println(i+"| count: "+userEntity.getCount()+"  id:"+userEntity.getSessionId());
+        i++;
+        }
+    }
+    @Override
+    public JSONObject getTop10() {
+        Iterable<UserEntity> current= userRepository.findTop10ByOrderByCountDesc();
+        if(!isSameIterable(Top10,current)) {
+            Top10 = current;
+            JSONObject forSend = new JSONObject();
+            forSend.put("type", "top10");
+            int i = 1;
+            for (UserEntity userEntity : Top10) {
+                JSONObject temp = new JSONObject();
+                temp.put("ranking", String.valueOf(i));
+                temp.put("id", userEntity.getSessionId());
+                temp.put("count", userEntity.getCount());
+                forSend.put(String.valueOf(i), temp);
+                i++;
+            }
+            return forSend;
+        }return null;
     }
 
     @Override

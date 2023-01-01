@@ -47,12 +47,25 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String id = session.getId();  //메시지를 보낸 아이디
-        System.out.println(message.getPayload());
         JSONObject JsonMessage = jsonToObjectParser(message.getPayload());
-        JSONObject forSend = popCatService.addData(Integer.parseInt(JsonMessage.get("count").toString()),JsonMessage.get("id").toString());
+        System.out.println(message.getPayload());
+        JSONObject forSend = new JSONObject();
+        switch ( JsonMessage.get("type").toString()){
+            case "count":  forSend = popCatService.addData(Integer.parseInt(JsonMessage.get("count").toString()),JsonMessage.get("id").toString());
+                break;
+            case "nickname": popCatService.addNickName(JsonMessage.get("name").toString(),JsonMessage.get("id").toString());
+                break;
+            case "login":
+                break;
+            default:;
+        }
         if(forSend !=null){
-        sendMessage(forSend.toString(),id);}
-        JSONObject top10 = popCatService.getTop10();
+            sendMessage(forSend.toString(),id);
+        }
+        updateTop10();
+    }
+    private void updateTop10(){
+        JSONObject top10 = popCatService.getTop10 ();
         if (top10 != null) {
             sendMessageAll(top10.toJSONString());
         }

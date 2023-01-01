@@ -49,19 +49,19 @@ public class PopCatServiceImpl implements PopCatService{
         List<UserEntity> currentList = new ArrayList<UserEntity>();
         prev.forEach(prevList::add);
         current.forEach(currentList::add);
-
-        for(int i = 0; i<currentList.size();i++){
-            if(!prevList.get(i).getSessionId().equals(currentList.get(i).getSessionId())){
-                System.out.println("user is change");
-                return false;
-            }
-            if(!prevList.get(i).getCount().equals(currentList.get(i).getCount())){
-                System.out.println("count is change");
-                return false;
-
-            }
-        }
+try {
+    for (int i = 0; i < currentList.size(); i++) {
+        if(!EntityEqaul(prevList.get(i),currentList.get(i))) return false;
+    }
+}catch (IndexOutOfBoundsException e){
+    return false;
+}
         return true;
+    }
+
+    private boolean EntityEqaul(UserEntity entity1, UserEntity entity2){
+        return entity1.getNickname().equals(entity2.getNickname()) &&
+                entity1.getCount().equals(entity2.getCount());
     }
     private void printIterable(Iterable<UserEntity> temp){
         int i = 1;
@@ -78,7 +78,8 @@ public class PopCatServiceImpl implements PopCatService{
         for (UserEntity userEntity : current) {
             JSONObject temp = new JSONObject();
             temp.put("ranking", String.valueOf(i));
-            temp.put("id", userEntity.getSessionId());
+            temp.put("name", userEntity.getNickname());
+            temp.put("id",userEntity.getSessionId());
             temp.put("count", userEntity.getCount());
             list.add(temp);
             i++;
@@ -110,6 +111,7 @@ public class PopCatServiceImpl implements PopCatService{
         if(null ==userEntity){
             UserDto userDto = new UserDto();
             userDto.setSessionId(id);
+            userDto.setNickname("고냥이"+id.substring(0,4));
             userEntity = new ModelMapper().map(userDto,UserEntity.class);
         }
         userEntity.setCount(count);
@@ -117,5 +119,20 @@ public class PopCatServiceImpl implements PopCatService{
         return getMyRanking(id);
 
     }
+
+    @Override
+    public void addNickName(String name, String id) {
+        UserEntity userEntity = userRepository.findBySessionId(id);
+        if(userEntity == null) {
+            UserDto userDto = new UserDto();
+            userDto.setCount(0);
+            userDto.setSessionId(id);
+            userEntity = new ModelMapper().map(userDto, UserEntity.class);
+        }
+            userEntity.setNickname(name);
+            userRepository.save(userEntity);
+
+        }
+
 
 }

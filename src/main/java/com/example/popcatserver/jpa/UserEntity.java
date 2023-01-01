@@ -15,5 +15,7 @@ public class UserEntity implements Serializable {
     private String sessionId;
     @Column(nullable = false)
     private Integer count;
+    @Column(nullable = false)
+    private String nickname;
 
 }

@@ -9,4 +9,6 @@ public interface PopCatService {
 
     public JSONObject addData(int count, String id);
 
+    public void addNickName(String name, String id);
+
 }

@@ -55,7 +55,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 break;
             case "nickname": popCatService.addNickName(JsonMessage.get("name").toString(),JsonMessage.get("id").toString());
                 break;
-            case "login":
+            case "login":forSend = popCatService.login(JsonMessage.get("id").toString());
                 break;
             default:;
         }

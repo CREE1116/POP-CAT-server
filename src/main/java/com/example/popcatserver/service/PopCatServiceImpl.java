@@ -134,5 +134,21 @@ try {
 
         }
 
+    @Override
+    public JSONObject login(String id) {
+       UserEntity userEntity = userRepository.findBySessionId(id);
+       JSONObject jsonObject = new JSONObject();
+       if(userEntity == null){
+           jsonObject.put("type","loginFail");
+           System.out.println("login fail");
+       }else {
+           jsonObject.put("type", "login");
+           jsonObject.put("count", userEntity.getCount());
+           jsonObject.put("name", userEntity.getNickname());
+           System.out.println("count: " + userEntity.getCount() + "name: " + userEntity.getNickname() + "  in login");
+       }
+       return jsonObject;
+    }
+
 
 }

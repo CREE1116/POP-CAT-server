@@ -13,4 +13,5 @@ public interface PopCatService {
     public void addNickName(String name, String id);
 
     public JSONObject login(String id);
+
 }

@@ -3,6 +3,7 @@ package com.example.popcatserver.service;
 import com.example.popcatserver.dto.UserDto;
 import com.example.popcatserver.jpa.UserEntity;
 import com.example.popcatserver.jpa.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -108,7 +109,7 @@ try {
     public JSONObject addData(int count, String id) {
         if(id==null || id.length()<1) return null;
         UserEntity userEntity = userRepository.findBySessionId(id);
-        if(null ==userEntity){
+        if(null == userEntity){
             UserDto userDto = new UserDto();
             userDto.setSessionId(id);
             userDto.setNickname("고냥이"+id.substring(0,4));
@@ -143,12 +144,14 @@ try {
            System.out.println("login fail");
        }else {
            jsonObject.put("type", "login");
+           jsonObject.put("id", id);
            jsonObject.put("count", userEntity.getCount());
            jsonObject.put("name", userEntity.getNickname());
            System.out.println("count: " + userEntity.getCount() + "name: " + userEntity.getNickname() + "  in login");
        }
        return jsonObject;
     }
+
 
 
 }

@@ -9,4 +9,6 @@ public interface UserRepository extends CrudRepository<UserEntity,Long> {
      Iterable<UserEntity> findTop10ByOrderByCountDesc();
      UserEntity findBySessionId(String id);
 
+
+
 }

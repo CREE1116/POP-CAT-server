@@ -13,7 +13,7 @@ Spring:
         format_sql: true  # (3) SQL pretty print
         dialect: org.hibernate.dialect.MariaDB103Dialect
   datasource:
-    url: jdbc:mariadb://${DB_URL}
+    url: jdbc:mariadb://svc.sel4.cloudtype.app:30792
     username: root
-    password: ${DB_PASSWORD}
+    password: 152390
     driver-class-name: org.mariadb.jdbc.Driver
